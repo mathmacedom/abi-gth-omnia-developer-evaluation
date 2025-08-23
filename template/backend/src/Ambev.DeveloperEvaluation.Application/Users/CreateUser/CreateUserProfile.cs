@@ -1,19 +1,21 @@
 ﻿using AutoMapper;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 
-namespace Ambev.DeveloperEvaluation.Application.Users.CreateUser;
+namespace Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 
 /// <summary>
-/// Profile for mapping between User entity and CreateUserResponse
+/// Profile for mapping between Sale entity and GetSale response/result.
 /// </summary>
-public class CreateUserProfile : Profile
+public class GetSaleProfile : Profile
 {
     /// <summary>
-    /// Initializes the mappings for CreateUser operation
+    /// Initializes the mappings for GetSale operation.
     /// </summary>
-    public CreateUserProfile()
+    public GetSaleProfile()
     {
-        CreateMap<CreateUserCommand, User>();
-        CreateMap<User, CreateUserResult>();
+        CreateMap<Sale, GetSaleResult>()
+            .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
+
+        CreateMap<SaleItem, GetSaleItemResult>();
     }
 }
