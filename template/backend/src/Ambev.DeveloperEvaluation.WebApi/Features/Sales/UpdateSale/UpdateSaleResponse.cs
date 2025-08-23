@@ -1,6 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
+namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 
 /// <summary>
 /// API response model for UpdateSale operation

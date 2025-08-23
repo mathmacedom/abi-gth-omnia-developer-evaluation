@@ -53,12 +53,16 @@ public class Sale : BaseEntity
     /// <summary>
     /// Total sale amount (calculated from items).
     /// </summary>
-    public decimal TotalAmount => Items.Sum(i => i.Total);
+    public decimal TotalAmount { get; private set; }
 
     /// <summary>
     /// Total sale discount (calculated from items).
     /// </summary>
-    public decimal TotalDiscount => Items.Sum(i => i.Discount);
+    public decimal TotalDiscount { get; private set; }
+
+    public Sale()
+    {
+    }
 
     /// <summary>
     /// Creates a new sale instance.
@@ -85,12 +89,35 @@ public class Sale : BaseEntity
 
         var item = new SaleItem(productId, productName, quantity, unitPrice);
         Items.Add(item);
+
+        TotalAmount = Items.Sum(i => i.Total);
+        TotalDiscount = Items.Sum(i => i.Discount);
+    }
+
+    /// <summary>
+    /// Updates the sale and its items.
+    /// </summary>
+    public void UpdateSale(Guid branchId, Guid customerId, List<SaleItem> items)
+    {
+        CustomerId = customerId;
+        BranchId = branchId;
+        Items.Clear();
+        TotalAmount = 0;
+        TotalDiscount = 0;
+
+        foreach (var item in Items)
+        {
+            Items.Add(item);
+        }
+
+        TotalAmount = Items.Sum(i => i.Total);
+        TotalDiscount = Items.Sum(i => i.Discount);
     }
 
     /// <summary>
     /// Cancels the sale and all items.
     /// </summary>
-    public void Cancel()
+    public void CancelSale()
     {
         if (IsCancelled) return;
 

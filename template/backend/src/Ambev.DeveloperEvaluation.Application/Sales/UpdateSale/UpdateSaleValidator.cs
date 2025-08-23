@@ -5,23 +5,30 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 /// <summary>
 /// Validator for <see cref="UpdateSaleCommand"/> that defines validation rules for sale creation.
 /// </summary>
-/// <remarks>
-/// Validation rules include:
-/// - CustomerId: Must not be empty
-/// - BranchId: Must not be empty
-/// - Items: Must contain at least one item
-/// - Quantity: Must be greater than zero
-/// - UnitPrice: Must be greater than zero
-/// </remarks>
 public class UpdateSaleCommandValidator : AbstractValidator<UpdateSaleCommand>
 {
+    /// <summary>
+    /// Initializes a new instance of the UpdateSaleCommandValidator with defined validation rules.
+    /// </summary>
+    /// <remarks>
+    /// Validation rules include:
+    /// - Id: Must not be empty
+    /// - BranchId: Must not be empty
+    /// - CustomerId: Must not be empty
+    /// - Items: Must contain at least one item
+    /// - Item Quantity: Must be greater than zero
+    /// - Item UnitPrice: Must be greater than zero
+    /// </remarks>
     public UpdateSaleCommandValidator()
     {
-        RuleFor(sale => sale.CustomerId)
-            .NotEmpty().WithMessage("CustomerId is required");
+        RuleFor(sale => sale.Id)
+            .NotEmpty().WithMessage("Sale Id is required");
 
         RuleFor(sale => sale.BranchId)
             .NotEmpty().WithMessage("BranchId is required");
+
+        RuleFor(sale => sale.CustomerId)
+            .NotEmpty().WithMessage("CustomerId is required");
 
         RuleFor(sale => sale.Items)
             .NotEmpty().WithMessage("At least one sale item is required");

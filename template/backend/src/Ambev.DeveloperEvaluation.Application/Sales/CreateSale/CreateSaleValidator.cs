@@ -5,16 +5,19 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 /// <summary>
 /// Validator for <see cref="CreateSaleCommand"/> that defines validation rules for sale creation.
 /// </summary>
-/// <remarks>
-/// Validation rules include:
-/// - CustomerId: Must not be empty
-/// - BranchId: Must not be empty
-/// - Items: Must contain at least one item
-/// - Quantity: Must be greater than zero
-/// - UnitPrice: Must be greater than zero
-/// </remarks>
 public class CreateSaleCommandValidator : AbstractValidator<CreateSaleCommand>
 {
+    /// <summary>
+    /// Initializes a new instance of the GetSaleValidator with defined validation rules.
+    /// </summary>
+    /// <remarks>
+    /// Validation rules include:
+    /// - CustomerId: Must not be empty
+    /// - BranchId: Must not be empty
+    /// - Items: Must contain at least one item
+    /// - Item Quantity: Must be greater than zero
+    /// - Item UnitPrice: Must be greater than zero
+    /// </remarks>
     public CreateSaleCommandValidator()
     {
         RuleFor(sale => sale.CustomerId)

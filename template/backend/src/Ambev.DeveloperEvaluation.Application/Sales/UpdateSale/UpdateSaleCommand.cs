@@ -1,15 +1,13 @@
-﻿using Ambev.DeveloperEvaluation.Application.Users.UpdateUser;
-using Ambev.DeveloperEvaluation.Common.Validation;
+﻿using Ambev.DeveloperEvaluation.Common.Validation;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 
 /// <summary>
-/// Command for creating a new sale.
+/// Command for updating a new sale.
 /// </summary>
 /// <remarks>
-/// This command captures the required data for creating a sale,
-/// including customer, branch and a collection of sale items.
+/// This command captures the required data for updating an existing sale and its items.
 /// It implements <see cref="IRequest{TResponse}"/> to initiate the request
 /// that returns a <see cref="UpdateSaleResult"/>.
 /// 
@@ -28,6 +26,11 @@ public class UpdateSaleCommand : IRequest<UpdateSaleResult>
     /// Gets or sets the external identifier of the branch where the sale occurred.
     /// </summary>
     public Guid BranchId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the external identifier of the customer associated with the sale.
+    /// </summary>
+    public Guid CustomerId { get; set; }
 
     /// <summary>
     /// Gets or sets the collection of items included in this sale.

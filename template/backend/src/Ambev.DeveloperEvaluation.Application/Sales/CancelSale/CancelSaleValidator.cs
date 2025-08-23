@@ -10,6 +10,10 @@ public class CancelSaleValidator : AbstractValidator<CancelSaleCommand>
     /// <summary>
     /// Initializes validation rules for CancelSaleCommand
     /// </summary>
+    /// <remarks>
+    /// Validation rules include:
+    /// - Id: Required and cannot be empty
+    /// </remarks>
     public CancelSaleValidator()
     {
         RuleFor(x => x.Id)

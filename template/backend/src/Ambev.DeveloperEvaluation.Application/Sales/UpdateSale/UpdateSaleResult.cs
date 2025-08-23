@@ -1,21 +1,21 @@
-﻿namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
+﻿namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 
 /// <summary>
-/// Represents the response returned after successfully creating a new sale.
+/// Represents the response returned after successfully updating a new sale.
 /// </summary>
 /// <remarks>
-/// This response contains the unique identifier of the created sale,
+/// This response contains the unique identifier of the updated sale,
 /// along with branch, customer, and the list of items.
 /// </remarks>
-public class CreateSaleResult
+public class UpdateSaleResult
 {
     /// <summary>
-    /// Gets or sets the unique identifier of the newly created sale.
+    /// Gets or sets the unique identifier of the updated sale.
     /// </summary>
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the external identifier of the customer who made the sale.
+    /// Gets or sets the external identifier of the customer associated with the sale.
     /// </summary>
     public Guid CustomerId { get; set; }
 
@@ -25,15 +25,15 @@ public class CreateSaleResult
     public Guid BranchId { get; set; }
 
     /// <summary>
-    /// Gets or sets the list of items included in the sale.
+    /// Gets or sets the list of updated sale items.
     /// </summary>
-    public List<CreateSaleItemResult> Items { get; set; } = new();
+    public List<UpdateSaleItemResult> Items { get; set; } = new();
 }
 
 /// <summary>
-/// Represents the details of a single item in a created sale.
+/// Represents the details of a single item in a updated sale.
 /// </summary>
-public class CreateSaleItemResult
+public class UpdateSaleItemResult
 {
     /// <summary>
     /// Gets or sets the external identifier of the product sold.

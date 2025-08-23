@@ -1,26 +1,26 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
 using AutoMapper;
 
-namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
+namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 
 /// <summary>
-/// Profile for mapping between Sale entity and CreateSale response/result.
+/// Profile for mapping between Sale entity and UpdateSale response/result.
 /// </summary>
-public class CreateSaleProfile : Profile
+public class UpdateSaleProfile : Profile
 {
     /// <summary>
-    /// Initializes the mappings for CreateSale operation.
+    /// Initializes the mappings for UpdateSale operation.
     /// </summary>
-    public CreateSaleProfile()
+    public UpdateSaleProfile()
     {
-        CreateMap<CreateSaleCommand, Sale>()
+        CreateMap<UpdateSaleCommand, Sale>()
             .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
 
-        CreateMap<CreateSaleItemCommand, SaleItem>();
+        CreateMap<UpdateSaleItemCommand, SaleItem>();
 
-        CreateMap<Sale, CreateSaleResult>()
+        CreateMap<Sale, UpdateSaleResult>()
             .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
 
-        CreateMap<SaleItem, CreateSaleItemResult>();
+        CreateMap<SaleItem, UpdateSaleItemResult>();
     }
 }

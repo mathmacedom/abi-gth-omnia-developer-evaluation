@@ -1,9 +1,9 @@
-﻿using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
-using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 
@@ -14,16 +14,22 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IMapper _mapper;
+    private readonly ILogger<CreateSaleHandler> _logger;
 
     /// <summary>
     /// Initializes a new instance of <see cref="CreateSaleHandler"/>.
     /// </summary>
     /// <param name="saleRepository">The repository for managing sales.</param>
     /// <param name="mapper">The AutoMapper instance for mapping objects.</param>
-    public CreateSaleHandler(ISaleRepository saleRepository, IMapper mapper)
+    /// <param name="logger">The logger for CreateSaleHandler</param>
+    public CreateSaleHandler(
+        ISaleRepository saleRepository, 
+        IMapper mapper,
+        ILogger<CreateSaleHandler> logger)
     {
         _saleRepository = saleRepository;
         _mapper = mapper;
+        _logger = logger;
     }
 
     /// <summary>
@@ -34,19 +40,21 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
     /// <returns>The details of the created sale.</returns>
     public async Task<CreateSaleResult> Handle(CreateSaleCommand command, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling {CreateSaleCommand}...", nameof(CreateSaleCommand));
+        
         var validator = new CreateSaleCommandValidator();
         var validationResult = await validator.ValidateAsync(command, cancellationToken);
 
+        _logger.LogInformation("Checking if request is valid...");
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        // Map command to domain entity
+        _logger.LogInformation("Creating sale...");
         var sale = _mapper.Map<Sale>(command);
-
-        // Persist sale
         var createdSale = await _saleRepository.CreateAsync(sale, cancellationToken);
+        var result = _mapper.Map<CreateSaleResult>(createdSale);
 
-        // Map result to response DTO
-        return _mapper.Map<CreateSaleResult>(createdSale);
+        _logger.LogInformation("Handled {CreateSaleCommand} successfully...", nameof(CreateSaleCommand));
+        return result;
     }
 }

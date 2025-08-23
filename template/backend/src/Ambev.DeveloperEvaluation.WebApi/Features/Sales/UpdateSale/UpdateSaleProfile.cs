@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
+﻿using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using AutoMapper;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;

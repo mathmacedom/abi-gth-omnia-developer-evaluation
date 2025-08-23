@@ -1,6 +1,7 @@
-using MediatR;
-using FluentValidation;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using FluentValidation;
+using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 
@@ -9,17 +10,20 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 /// </summary>
 public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleResponse>
 {
-    private readonly ISaleRepository _userRepository;
+    private readonly ISaleRepository _saleRepository;
+    private readonly ILogger<CancelSaleHandler> _logger;
 
     /// <summary>
     /// Initializes a new instance of CancelSaleHandler
     /// </summary>
-    /// <param name="userRepository">The user repository</param>
-    /// <param name="validator">The validator for CancelSaleCommand</param>
+    /// <param name="saleRepository">The sale repository</param>
+    /// <param name="logger">The logger for CancelSaleHandler</param>
     public CancelSaleHandler(
-        ISaleRepository userRepository)
+        ISaleRepository saleRepository, 
+        ILogger<CancelSaleHandler> logger)
     {
-        _userRepository = userRepository;
+        _saleRepository = saleRepository;
+        _logger = logger;
     }
 
     /// <summary>
@@ -30,16 +34,21 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
     /// <returns>The result of the delete operation</returns>
     public async Task<CancelSaleResponse> Handle(CancelSaleCommand request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling {CancelSaleCommand}...", nameof(CancelSaleCommand));
+
         var validator = new CancelSaleValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
+        _logger.LogInformation("Checking if request is valid...");
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var success = await _userRepository.CancelAsync(request.Id, cancellationToken);
+        _logger.LogInformation("Trying to cancel request with ID {Id}...", request.Id);
+        var success = await _saleRepository.CancelAsync(request.Id, cancellationToken);
         if (!success)
             throw new KeyNotFoundException($"Sale with ID {request.Id} not found");
 
+        _logger.LogInformation("Handled {CancelSaleCommand} successfully...", nameof(CancelSaleCommand));
         return new CancelSaleResponse { Success = true };
     }
 }

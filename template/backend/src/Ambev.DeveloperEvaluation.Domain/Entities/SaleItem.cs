@@ -12,8 +12,13 @@ public class SaleItem : BaseEntity
     public int Quantity { get; private set; }
     public decimal UnitPrice { get; private set; }
     public decimal Discount { get; private set; }
-    public decimal Total => (Quantity * UnitPrice) - Discount;
+    public decimal Total { get; private set; }
     public bool IsCancelled { get; private set; }
+
+    public SaleItem()
+    {
+        
+    }
 
     public SaleItem(Guid productId, string productName, int quantity, decimal unitPrice)
     {
@@ -27,6 +32,7 @@ public class SaleItem : BaseEntity
         ProductName = productName;
         Quantity = quantity;
         UnitPrice = unitPrice;
+        Total = (Quantity * UnitPrice) - Discount;
 
         ApplyDiscount();
     }

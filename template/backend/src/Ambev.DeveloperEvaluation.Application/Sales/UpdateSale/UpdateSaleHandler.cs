@@ -1,5 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Application.Users.UpdateUser;
-using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using FluentValidation;
@@ -22,7 +21,11 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
     /// </summary>
     /// <param name="saleRepository">The repository for managing sales.</param>
     /// <param name="mapper">The AutoMapper instance for mapping objects.</param>
-    public UpdateSaleHandler(ISaleRepository saleRepository, IMapper mapper, ILogger<UpdateSaleHandler> logger)
+    /// <param name="logger">The logger for UpdateSaleHandler</param>
+    public UpdateSaleHandler(
+        ISaleRepository saleRepository, 
+        IMapper mapper, 
+        ILogger<UpdateSaleHandler> logger)
     {
         _saleRepository = saleRepository;
         _mapper = mapper;
@@ -39,6 +42,14 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
     {
         _logger.LogInformation("The handler {UpdateSaleHandler} was triggered to handle {UpdateSaleCommand}", nameof(UpdateSaleHandler), nameof(UpdateSaleCommand));
 
+        var validator = new UpdateSaleCommandValidator();
+        var validationResult = await validator.ValidateAsync(command, cancellationToken);
+
+        _logger.LogInformation("Checking if request is valid...");
+        if (!validationResult.IsValid)
+            throw new ValidationException(validationResult.Errors);
+
+        _logger.LogInformation("Trying to get sale with ID {Id}...", command.Id);
         var sale = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
 
         if (sale is null)
@@ -47,19 +58,12 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
             throw new KeyNotFoundException("Sale not found");
         }
 
-        var validator = new UpdateSaleCommandValidator();
-        var validationResult = await validator.ValidateAsync(command, cancellationToken);
+        var items = _mapper.Map<List<SaleItem>>(command.Items);
+        sale.UpdateSale(command.BranchId, command.CustomerId, items);
 
-        if (!validationResult.IsValid)
-            throw new ValidationException(validationResult.Errors);
-
-        // Map command to domain entity
-        var sale = _mapper.Map<Sale>(command);
-
-        // Persist sale
-        var createdSale = await _saleRepository.UpdateAsync(sale, cancellationToken);
-
-        // Map result to response DTO
-        return _mapper.Map<UpdateSaleResult>(createdSale);
+        var updatedSale = await _saleRepository.UpdateAsync(sale, cancellationToken);
+        var result = _mapper.Map<UpdateSaleResult>(updatedSale);
+        
+        return result;
     }
 }
