@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using FluentValidation;
@@ -47,7 +48,10 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
 
         _logger.LogInformation("Checking if request is valid...");
         if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Validation failed for {CreateSaleCommand}", nameof(CreateSaleCommand));
             throw new ValidationException(validationResult.Errors);
+        }
 
         _logger.LogInformation("Creating sale...");
         var sale = _mapper.Map<Sale>(command);

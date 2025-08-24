@@ -20,6 +20,7 @@ public class Sale : BaseEntity
     /// </summary>
     public DateTime SaleDate { get; private set; } = DateTime.UtcNow;
 
+    
     /// <summary>
     /// External identity reference for the customer.
     /// </summary>
@@ -29,6 +30,7 @@ public class Sale : BaseEntity
     /// Denormalized customer name.
     /// </summary>
     public string CustomerName { get; private set; } = string.Empty;
+
 
     /// <summary>
     /// External identity reference for the branch.
@@ -40,15 +42,11 @@ public class Sale : BaseEntity
     /// </summary>
     public string BranchName { get; private set; } = string.Empty;
 
+
     /// <summary>
     /// Collection of items sold in this transaction.
     /// </summary>
     public List<SaleItem> Items { get; private set; } = [];
-
-    /// <summary>
-    /// Indicates whether the sale is cancelled.
-    /// </summary>
-    public bool IsCancelled { get; private set; }
 
     /// <summary>
     /// Total sale amount (calculated from items).
@@ -59,6 +57,16 @@ public class Sale : BaseEntity
     /// Total sale discount (calculated from items).
     /// </summary>
     public decimal TotalDiscount { get; private set; }
+
+    /// <summary>
+    /// Indicates whether the sale is cancelled.
+    /// </summary>
+    public bool IsCancelled { get; private set; }
+
+    /// <summary>
+    /// Date and time when the sale was cancelled.
+    /// </summary>
+    public DateTime? CancelledAt { get; set; }
 
     public Sale()
     {
@@ -122,6 +130,8 @@ public class Sale : BaseEntity
         if (IsCancelled) return;
 
         IsCancelled = true;
+        CancelledAt = DateTime.UtcNow;
+
         foreach (var item in Items)
         {
             item.Cancel();

@@ -3,7 +3,7 @@
 namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
     /// <summary>
-    /// Represents a product in the system, including customer, branch, items, and totals.
+    /// Represents a product in the system, including name, price, description, and category.
     /// Follows DDD principles with validation and encapsulated business rules.
     /// </summary>
     public class Product : BaseEntity
@@ -14,9 +14,9 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public string Name { get; private set; } = string.Empty;
 
         /// <summary>
-        /// Price of the product.
+        /// Unit price of the product.
         /// </summary>
-        public decimal Price { get; private set; }
+        public decimal UnitPrice { get; private set; }
 
         /// <summary>
         /// Description of the product.
@@ -27,5 +27,30 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         /// Category of the product.
         /// </summary>
         public string Category { get; private set; } = string.Empty;
+
+        /// <summary>
+        /// Indicates whether the product is active.
+        /// </summary>
+        public bool IsActive { get; private set; }
+
+        public Product()
+        {
+            
+        }
+
+        /// <summary>
+        /// Create a new product instance
+        /// </summary>
+        /// <param name="name">Name of the product</param>
+        /// <param name="unitPrice">Unit price of the product</param>
+        /// <param name="description">Description of the product</param>
+        /// <param name="category">Category name of the product</param>
+        public Product(string name, decimal unitPrice, string description, string category)
+        {
+            Name = name;
+            UnitPrice = unitPrice;
+            Description = description;
+            Category = category;
+        }
     }
 }

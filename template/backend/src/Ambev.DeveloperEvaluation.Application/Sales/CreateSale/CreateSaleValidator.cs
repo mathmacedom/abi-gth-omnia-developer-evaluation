@@ -8,7 +8,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 public class CreateSaleCommandValidator : AbstractValidator<CreateSaleCommand>
 {
     /// <summary>
-    /// Initializes a new instance of the GetSaleValidator with defined validation rules.
+    /// Initializes a new instance of the CreateSaleCommandValidator with defined validation rules.
     /// </summary>
     /// <remarks>
     /// Validation rules include:

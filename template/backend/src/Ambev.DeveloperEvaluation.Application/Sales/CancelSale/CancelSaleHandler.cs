@@ -41,14 +41,20 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
 
         _logger.LogInformation("Checking if request is valid...");
         if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Validation failed for {CancelSaleCommand}", nameof(CancelSaleCommand));
             throw new ValidationException(validationResult.Errors);
+        }
 
         _logger.LogInformation("Trying to cancel request with ID {Id}...", request.Id);
         var success = await _saleRepository.CancelAsync(request.Id, cancellationToken);
         if (!success)
+        {
+            _logger.LogWarning("Sale with ID {SaleId} not found", request.Id);
             throw new KeyNotFoundException($"Sale with ID {request.Id} not found");
+        }
 
-        _logger.LogInformation("Handled {CancelSaleCommand} successfully...", nameof(CancelSaleCommand));
+            _logger.LogInformation("Handled {CancelSaleCommand} successfully...", nameof(CancelSaleCommand));
         return new CancelSaleResponse { Success = true };
     }
 }

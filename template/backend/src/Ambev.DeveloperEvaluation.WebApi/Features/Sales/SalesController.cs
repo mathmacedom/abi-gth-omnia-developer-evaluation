@@ -143,7 +143,7 @@ public class SalesController : BaseController
     /// <summary>
     /// Cancel a sale by its ID
     /// </summary>
-    /// <param name="id">The unique identifier of the sale to delete</param>
+    /// <param name="id">The unique identifier of the sale to cancel</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Success response if the sale was cancelled</returns>
     [HttpPatch("{id}/cancel")]

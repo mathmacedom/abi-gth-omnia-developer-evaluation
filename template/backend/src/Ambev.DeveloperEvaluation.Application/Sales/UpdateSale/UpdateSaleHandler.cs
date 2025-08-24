@@ -35,31 +35,34 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
     /// <summary>
     /// Handles the <see cref="UpdateSaleCommand"/> request.
     /// </summary>
-    /// <param name="command">The create sale command containing the sale data.</param>
+    /// <param name="request">The create sale command containing the sale data.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The details of the created sale.</returns>
-    public async Task<UpdateSaleResult> Handle(UpdateSaleCommand command, CancellationToken cancellationToken)
+    public async Task<UpdateSaleResult> Handle(UpdateSaleCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("The handler {UpdateSaleHandler} was triggered to handle {UpdateSaleCommand}", nameof(UpdateSaleHandler), nameof(UpdateSaleCommand));
 
         var validator = new UpdateSaleCommandValidator();
-        var validationResult = await validator.ValidateAsync(command, cancellationToken);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         _logger.LogInformation("Checking if request is valid...");
         if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Validation failed for {UpdateSaleCommand}", nameof(UpdateSaleCommand));
             throw new ValidationException(validationResult.Errors);
+        }
 
-        _logger.LogInformation("Trying to get sale with ID {Id}...", command.Id);
-        var sale = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
+        _logger.LogInformation("Trying to get sale with ID {Id}...", request.Id);
+        var sale = await _saleRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (sale is null)
         {
-            _logger.LogWarning("Sale with id {SaleId} not found", command.Id);
+            _logger.LogWarning("Sale with id {SaleId} not found", request.Id);
             throw new KeyNotFoundException("Sale not found");
         }
 
-        var items = _mapper.Map<List<SaleItem>>(command.Items);
-        sale.UpdateSale(command.BranchId, command.CustomerId, items);
+        var items = _mapper.Map<List<SaleItem>>(request.Items);
+        sale.UpdateSale(request.BranchId, request.CustomerId, items);
 
         var updatedSale = await _saleRepository.UpdateAsync(sale, cancellationToken);
         var result = _mapper.Map<UpdateSaleResult>(updatedSale);

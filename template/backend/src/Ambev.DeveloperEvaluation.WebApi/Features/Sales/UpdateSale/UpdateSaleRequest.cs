@@ -1,4 +1,6 @@
-﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
+﻿using System.Text.Json.Serialization;
+
+namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 
 /// <summary>
 /// Request model for updating a sale
@@ -8,6 +10,7 @@ public class UpdateSaleRequest
     /// <summary>
     /// The unique identifier of the sale
     /// </summary>
+    [JsonIgnore]
     public Guid Id { get; set; }
 
     /// <summary>

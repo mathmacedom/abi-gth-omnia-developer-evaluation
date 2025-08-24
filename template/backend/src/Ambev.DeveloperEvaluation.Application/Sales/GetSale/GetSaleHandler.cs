@@ -46,12 +46,18 @@ public class GetSaleHandler : IRequestHandler<GetSaleCommand, GetSaleResult>
 
         _logger.LogInformation("Checking if request is valid...");
         if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Validation failed for {GetSaleCommand}", nameof(GetSaleCommand));
             throw new ValidationException(validationResult.Errors);
+        }
 
         _logger.LogInformation("Trying to get sale with ID {Id}...", request.Id);
         var sale = await _saleRepository.GetByIdAsync(request.Id, cancellationToken);
         if (sale == null)
+        {
+            _logger.LogWarning("Sale with id {SaleId} not found", request.Id);
             throw new KeyNotFoundException($"Sale with ID {request.Id} not found");
+        }
 
         _logger.LogInformation("Handled {GetSaleCommand} successfully...", nameof(GetSaleCommand));
         return _mapper.Map<GetSaleResult>(sale);
