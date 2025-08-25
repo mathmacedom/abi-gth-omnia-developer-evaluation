@@ -8,7 +8,7 @@ namespace Ambev.DeveloperEvaluation.Application.Products.DeleteProduct;
 /// <summary>
 /// Handler for processing DeleteProductCommand requests
 /// </summary>
-public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, DeleteProductResponse>
+public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, DeleteProductResult>
 {
     private readonly IProductRepository _productRepository;
     private readonly ILogger<DeleteProductHandler> _logger;
@@ -32,7 +32,7 @@ public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, Delete
     /// <param name="request">The DeleteProduct command</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The result of the delete operation</returns>
-    public async Task<DeleteProductResponse> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
+    public async Task<DeleteProductResult> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Handling {DeleteProductCommand}...", nameof(DeleteProductCommand));
 
@@ -55,6 +55,6 @@ public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, Delete
         }
 
         _logger.LogInformation("Handled {DeleteProductCommand} successfully...", nameof(DeleteProductCommand));
-        return new DeleteProductResponse { Success = true };
+        return new DeleteProductResult { Success = true };
     }
 }

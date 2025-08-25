@@ -23,11 +23,6 @@ public class UpdateSaleCommand : IRequest<UpdateSaleResult>
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the external identifier of the branch where the sale occurred.
-    /// </summary>
-    public Guid BranchId { get; set; }
-
-    /// <summary>
     /// Gets or sets the external identifier of the customer associated with the sale.
     /// </summary>
     public Guid CustomerId { get; set; }

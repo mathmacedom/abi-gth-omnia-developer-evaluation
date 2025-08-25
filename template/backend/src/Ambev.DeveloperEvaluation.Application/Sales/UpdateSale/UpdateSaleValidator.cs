@@ -13,7 +13,6 @@ public class UpdateSaleCommandValidator : AbstractValidator<UpdateSaleCommand>
     /// <remarks>
     /// Validation rules include:
     /// - Id: Must not be empty
-    /// - BranchId: Must not be empty
     /// - CustomerId: Must not be empty
     /// - Items: Must contain at least one item
     /// - Item Quantity: Must be greater than zero
@@ -23,9 +22,6 @@ public class UpdateSaleCommandValidator : AbstractValidator<UpdateSaleCommand>
     {
         RuleFor(sale => sale.Id)
             .NotEmpty().WithMessage("Sale Id is required");
-
-        RuleFor(sale => sale.BranchId)
-            .NotEmpty().WithMessage("BranchId is required");
 
         RuleFor(sale => sale.CustomerId)
             .NotEmpty().WithMessage("CustomerId is required");

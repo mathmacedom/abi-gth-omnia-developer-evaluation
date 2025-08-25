@@ -31,16 +31,10 @@ public class Sale : BaseEntity
     /// </summary>
     public string CustomerName { get; private set; } = string.Empty;
 
-
     /// <summary>
-    /// External identity reference for the branch.
+    /// Branch where the sale occurred.
     /// </summary>
-    public Guid BranchId { get; private set; }
-
-    /// <summary>
-    /// Denormalized branch description.
-    /// </summary>
-    public string BranchName { get; private set; } = string.Empty;
+    public string Branch { get; private set; } = string.Empty;
 
 
     /// <summary>
@@ -77,27 +71,22 @@ public class Sale : BaseEntity
     /// </summary>
     /// <param name="customerId">External customer ID</param>
     /// <param name="customerName">Customer name</param>
-    /// <param name="branchId">External branch ID</param>
-    /// <param name="branchName">Branch name</param>
-    public Sale(Guid customerId, string customerName, Guid branchId, string branchName)
+    /// <param name="branch">Branch name</param>
+    public Sale(Guid customerId, string branch)
     {
         CustomerId = customerId;
-        CustomerName = customerName;
-        BranchId = branchId;
-        BranchName = branchName;
+        Branch = branch;
     }
 
     /// <summary>
     /// Adds an item to the sale applying business rules (discount tiers and limits).
     /// </summary>
-    public void AddItem(Guid productId, string productName, int quantity, decimal unitPrice)
+    public void AddItems(List<SaleItem> items)
     {
         if (IsCancelled)
             throw new InvalidOperationException("Cannot add items to a cancelled sale.");
 
-        var item = new SaleItem(productId, productName, quantity, unitPrice);
-        Items.Add(item);
-
+        Items.AddRange(items);
         TotalAmount = Items.Sum(i => i.Total);
         TotalDiscount = Items.Sum(i => i.Discount);
     }
@@ -105,19 +94,17 @@ public class Sale : BaseEntity
     /// <summary>
     /// Updates the sale and its items.
     /// </summary>
-    public void UpdateSale(Guid branchId, Guid customerId, List<SaleItem> items)
+    public void UpdateSale(Guid customerId, List<SaleItem> items)
     {
+        if (IsCancelled)
+            throw new InvalidOperationException("Cannot update a cancelled sale.");
+
         CustomerId = customerId;
-        BranchId = branchId;
         Items.Clear();
         TotalAmount = 0;
         TotalDiscount = 0;
-
-        foreach (var item in Items)
-        {
-            Items.Add(item);
-        }
-
+        
+        Items.AddRange(items);
         TotalAmount = Items.Sum(i => i.Total);
         TotalDiscount = Items.Sum(i => i.Discount);
     }

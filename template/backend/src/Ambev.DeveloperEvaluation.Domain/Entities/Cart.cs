@@ -10,14 +10,14 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities;
 public class Cart : BaseEntity
 {
     /// <summary>
+    /// Branch where the cart was created.
+    /// </summary>
+    public string Branch { get; private set; } = string.Empty;
+
+    /// <summary>
     /// External identity reference for the customer.
     /// </summary>
     public Guid CustomerId { get; private set; }
-
-    /// <summary>
-    /// Denormalized customer name.
-    /// </summary>
-    public string CustomerName { get; private set; } = string.Empty;
 
     /// <summary>
     /// Collection of items inside the cart
@@ -29,18 +29,33 @@ public class Cart : BaseEntity
     /// </summary>
     public CartStatus Status { get; set; }
 
+    public Cart()
+    {
+        
+    }
+
     /// <summary>
     /// Creates a new cart instance.
     /// </summary>
+    /// <param name="branch">Branch name</param>
     /// <param name="customerId">External customer ID</param>
     /// <param name="customerName">Customer name</param>
     /// <param name="items">Items added to the cart</param>
     /// <param name="status">Status of the cart</param>
-    public Cart(Guid customerId, string customerName, List<CartItem> items, CartStatus status)
+    public Cart(string branch, Guid customerId, List<CartItem> items, CartStatus status)
     {
+        Branch = branch;
         CustomerId = customerId;
-        CustomerName = customerName;
         Items = items;
+        Status = status;
+    }
+
+    /// <summary>
+    /// Updates the status of the cart.
+    /// </summary>
+    /// <param name="status">The status to be updated</param>
+    public void UpdateStatus(CartStatus status)
+    {
         Status = status;
     }
 }

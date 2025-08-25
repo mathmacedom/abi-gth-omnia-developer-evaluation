@@ -1,6 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
-
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
+﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
 
 /// <summary>
 /// API response model for GetSale operation
@@ -20,7 +18,7 @@ public class GetSaleResponse
     /// <summary>
     /// The branch where the sale was registered
     /// </summary>
-    public Guid BranchId { get; set; }
+    public string Branch { get; set; } = string.Empty;
 
     /// <summary>
     /// The total amount of the sale
@@ -41,4 +39,35 @@ public class GetSaleResponse
     /// The list of items included in the sale
     /// </summary>
     public List<SaleItemResponse> Items { get; set; } = new();
+}
+
+/// <summary>
+/// Represents a single product item within a sale
+/// </summary>
+public class SaleItemResponse
+{
+    /// <summary>
+    /// The identifier of the product
+    /// </summary>
+    public Guid ProductId { get; set; }
+
+    /// <summary>
+    /// The quantity of the product sold
+    /// </summary>
+    public int Quantity { get; set; }
+
+    /// <summary>
+    /// The price per unit of the product
+    /// </summary>
+    public decimal UnitPrice { get; set; }
+
+    /// <summary>
+    /// The discount applied to this item
+    /// </summary>
+    public decimal Discount { get; set; }
+
+    /// <summary>
+    /// The total amount for this item (Quantity × UnitPrice - Discount)
+    /// </summary>
+    public decimal Total { get; set; }
 }

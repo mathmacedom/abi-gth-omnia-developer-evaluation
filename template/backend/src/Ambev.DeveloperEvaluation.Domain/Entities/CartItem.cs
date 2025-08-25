@@ -38,6 +38,11 @@ public class CartItem : BaseEntity
     /// </summary>
     public decimal Subtotal { get; private set; }
 
+    public CartItem()
+    {
+        
+    }
+
     /// <summary>
     /// Creates a new cart item instance.
     /// </summary>
@@ -53,6 +58,16 @@ public class CartItem : BaseEntity
         ProductName = productName;
         Quantity = quantity;
         UnitPrice = unitPrice;
+        Subtotal = UnitPrice * Quantity;
+    }
+
+    /// <summary>
+    /// Updates the quantity of the cart item and recalculates the subtotal.
+    /// </summary>
+    /// <param name="quantity">Quantity of the product inside the cart</param>
+    public void UpdateQuantity(int quantity)
+    {
+        Quantity = quantity;
         Subtotal = UnitPrice * Quantity;
     }
 }

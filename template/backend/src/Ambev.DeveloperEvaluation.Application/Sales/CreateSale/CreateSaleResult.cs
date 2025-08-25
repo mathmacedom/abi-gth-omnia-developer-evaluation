@@ -20,9 +20,9 @@ public class CreateSaleResult
     public Guid CustomerId { get; set; }
 
     /// <summary>
-    /// Gets or sets the external identifier of the branch where the sale occurred.
+    /// Gets or sets the name of the branch where the sale occurred.
     /// </summary>
-    public Guid BranchId { get; set; }
+    public string Branch { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the list of items included in the sale.

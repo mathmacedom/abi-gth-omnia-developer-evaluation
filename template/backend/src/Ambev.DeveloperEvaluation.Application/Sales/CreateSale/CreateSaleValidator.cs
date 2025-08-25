@@ -13,7 +13,7 @@ public class CreateSaleCommandValidator : AbstractValidator<CreateSaleCommand>
     /// <remarks>
     /// Validation rules include:
     /// - CustomerId: Must not be empty
-    /// - BranchId: Must not be empty
+    /// - Branch: Must not be empty
     /// - Items: Must contain at least one item
     /// - Item Quantity: Must be greater than zero
     /// - Item UnitPrice: Must be greater than zero
@@ -23,8 +23,8 @@ public class CreateSaleCommandValidator : AbstractValidator<CreateSaleCommand>
         RuleFor(sale => sale.CustomerId)
             .NotEmpty().WithMessage("CustomerId is required");
 
-        RuleFor(sale => sale.BranchId)
-            .NotEmpty().WithMessage("BranchId is required");
+        RuleFor(sale => sale.Branch)
+            .NotEmpty().WithMessage("Branch is required");
 
         RuleFor(sale => sale.Items)
             .NotEmpty().WithMessage("At least one sale item is required");

@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
+﻿using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 
@@ -20,7 +20,7 @@ public class UpdateSaleResponse
     /// <summary>
     /// The branch where the sale was registered
     /// </summary>
-    public Guid BranchId { get; set; }
+    public string Branch { get; set; }
 
     /// <summary>
     /// The updated total amount of the sale

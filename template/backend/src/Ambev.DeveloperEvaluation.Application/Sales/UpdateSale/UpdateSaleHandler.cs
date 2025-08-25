@@ -62,7 +62,7 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
         }
 
         var items = _mapper.Map<List<SaleItem>>(request.Items);
-        sale.UpdateSale(request.BranchId, request.CustomerId, items);
+        sale.UpdateSale(request.CustomerId, items);
 
         var updatedSale = await _saleRepository.UpdateAsync(sale, cancellationToken);
         var result = _mapper.Map<UpdateSaleResult>(updatedSale);
