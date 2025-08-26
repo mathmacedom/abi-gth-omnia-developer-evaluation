@@ -1,5 +1,7 @@
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using FluentValidation;
+using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -11,6 +13,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleResponse>
 {
     private readonly ISaleRepository _saleRepository;
+    private readonly IBus _bus;
     private readonly ILogger<CancelSaleHandler> _logger;
 
     /// <summary>
@@ -19,10 +22,12 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
     /// <param name="saleRepository">The sale repository</param>
     /// <param name="logger">The logger for CancelSaleHandler</param>
     public CancelSaleHandler(
-        ISaleRepository saleRepository, 
+        ISaleRepository saleRepository,
+        IBus bus,
         ILogger<CancelSaleHandler> logger)
     {
         _saleRepository = saleRepository;
+        _bus = bus;
         _logger = logger;
     }
 
@@ -46,6 +51,15 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
             throw new ValidationException(validationResult.Errors);
         }
 
+        _logger.LogInformation("Trying to get sale with ID {Id}...", request.Id);
+        var sale = await _saleRepository.GetByIdAsync(request.Id, cancellationToken);
+
+        if (sale is null)
+        {
+            _logger.LogWarning("Sale with id {SaleId} not found", request.Id);
+            throw new KeyNotFoundException("Sale not found");
+        }
+
         _logger.LogInformation("Trying to cancel request with ID {Id}...", request.Id);
         var success = await _saleRepository.CancelAsync(request.Id, cancellationToken);
         if (!success)
@@ -55,6 +69,24 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
         }
 
         _logger.LogInformation("Handled {CancelSaleCommand} successfully...", nameof(CancelSaleCommand));
+
+        try
+        {
+            _logger.LogInformation("Publishing event {SaleCancelledEvent} for sale ID {SaleId}...", nameof(SaleCancelledEvent), sale.Id);
+            await _bus.Publish(new SaleCancelledEvent
+            {
+                SaleId = sale.Id,
+                SaleNumber = sale.SaleNumber,
+                CustomerId = sale.CustomerId,
+                CustomerName = sale.CustomerName,
+                CancelledAt = sale.CancelledAt ?? DateTime.Now
+            }, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error publishing event {SaleCancelledEvent} for sale ID {SaleId}", nameof(SaleCancelledEvent), sale.Id);
+        }
+
         return new CancelSaleResponse { Success = true };
     }
 }

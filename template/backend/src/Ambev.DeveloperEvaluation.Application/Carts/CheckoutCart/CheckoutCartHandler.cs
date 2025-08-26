@@ -1,9 +1,11 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using FluentValidation;
+using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -17,23 +19,28 @@ public class CheckoutCartHandler : IRequestHandler<CheckoutCartCommand, GetSaleR
     private readonly ICartRepository _cartRepository;
     private readonly ISaleRepository _saleRepository;
     private readonly IMapper _mapper;
+    private readonly IBus _bus;
     private readonly ILogger<CheckoutCartHandler> _logger;
 
     /// <summary>
     /// Initializes a new instance of <see cref="CheckoutCartHandler"/>.
     /// </summary>
     /// <param name="cartRepository">The repository for managing carts.</param>
+    /// <param name="saleRepository">The repository for managing sales.</param>
     /// <param name="mapper">The AutoMapper instance for mapping objects.</param>
+    /// <param name="bus">The Bus instance for publishing events.</param>
     /// <param name="logger">The logger for CheckoutCartHandler</param>
     public CheckoutCartHandler(
         ICartRepository cartRepository,
         ISaleRepository saleRepository,
         IMapper mapper,
+        IBus bus,
         ILogger<CheckoutCartHandler> logger)
     {
         _cartRepository = cartRepository;
         _saleRepository = saleRepository;
         _mapper = mapper;
+        _bus = bus;
         _logger = logger;
     }
 
@@ -104,8 +111,38 @@ public class CheckoutCartHandler : IRequestHandler<CheckoutCartCommand, GetSaleR
         await _cartRepository.UpdateAsync(cart, cancellationToken);
 
         var result = _mapper.Map<GetSaleResult>(createdSale);
-
         _logger.LogInformation("Handled {CheckoutCartCommand} successfully...", nameof(CheckoutCartCommand));
+
+        try
+        {
+            _logger.LogInformation("Publishing event {SaleCreatedEvent} for sale ID {SaleId}...", nameof(SaleCreatedEvent), createdSale.Id);
+            await _bus.Publish(new SaleCreatedEvent
+            {
+                CartId = cart.Id,
+                SaleId = createdSale.Id,
+                SaleNumber = createdSale.SaleNumber,
+                SaleDate = createdSale.SaleDate,
+                CustomerId = createdSale.CustomerId,
+                CustomerName = createdSale.CustomerName,
+                Branch = createdSale.Branch,
+                TotalAmount = createdSale.TotalAmount,
+                TotalDiscount = createdSale.TotalDiscount,
+                Items = createdSale.Items.ConvertAll(i => new SaleItemCreatedEvent()
+                {
+                    ProductId = i.ProductId,
+                    ProductName = i.ProductName,
+                    Quantity = i.Quantity,
+                    UnitPrice = i.UnitPrice,
+                    Discount = i.Discount,
+                    Total = i.Total
+                })
+            }, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error publishing event {SaleCreatedEvent} for sale ID {SaleId}", nameof(SaleCreatedEvent), createdSale.Id);
+        }
+
         return result;
     }
 }

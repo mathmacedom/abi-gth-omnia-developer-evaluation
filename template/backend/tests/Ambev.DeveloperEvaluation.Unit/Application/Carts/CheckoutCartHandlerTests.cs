@@ -7,6 +7,7 @@ using Ambev.DeveloperEvaluation.Unit.Application.Carts.TestData;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 using AutoMapper;
 using FluentAssertions;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
@@ -18,6 +19,7 @@ namespace Ambev.DeveloperEvaluation.Unit.Application.Carts
         private readonly ICartRepository _cartRepository;
         private readonly ISaleRepository _saleRepository;
         private readonly IMapper _mapper;
+        private readonly IBus _bus;
         private readonly ILogger<CheckoutCartHandler> _logger;
         private readonly CheckoutCartHandler _handler;
 
@@ -26,8 +28,9 @@ namespace Ambev.DeveloperEvaluation.Unit.Application.Carts
             _cartRepository = Substitute.For<ICartRepository>();
             _saleRepository = Substitute.For<ISaleRepository>();
             _mapper = Substitute.For<IMapper>();
+            _bus = Substitute.For<IBus>();
             _logger = Substitute.For<ILogger<CheckoutCartHandler>>();
-            _handler = new CheckoutCartHandler(_cartRepository, _saleRepository, _mapper, _logger);
+            _handler = new CheckoutCartHandler(_cartRepository, _saleRepository, _mapper, _bus, _logger);
         }
 
         [Fact(DisplayName = "Given valid request When checking out cart Then returns success response")]

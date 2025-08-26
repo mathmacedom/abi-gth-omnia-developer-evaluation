@@ -1,5 +1,7 @@
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using FluentValidation;
+using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -11,18 +13,22 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSaleItem;
 public class CancelSaleItemHandler : IRequestHandler<CancelSaleItemCommand, CancelSaleItemResponse>
 {
     private readonly ISaleRepository _saleRepository;
+    private readonly IBus _bus;
     private readonly ILogger<CancelSaleItemHandler> _logger;
 
     /// <summary>
     /// Initializes a new instance of CancelSaleItemHandler
     /// </summary>
     /// <param name="saleRepository">The sale repository</param>
+    /// <param name="bus">The Bus instance for publishing events.</param>
     /// <param name="logger">The logger for CancelSaleItemHandler</param>
     public CancelSaleItemHandler(
-        ISaleRepository saleRepository, 
+        ISaleRepository saleRepository,
+        IBus bus,
         ILogger<CancelSaleItemHandler> logger)
     {
         _saleRepository = saleRepository;
+        _bus = bus;
         _logger = logger;
     }
 
@@ -68,6 +74,27 @@ public class CancelSaleItemHandler : IRequestHandler<CancelSaleItemCommand, Canc
         await _saleRepository.UpdateAsync(sale, cancellationToken);
 
         _logger.LogInformation("Handled {CancelSaleItemCommand} successfully...", nameof(CancelSaleItemCommand));
+
+        try
+        {
+            _logger.LogInformation("Publishing event {SaleItemCancelledEvent} for sale ID {SaleId}...", nameof(SaleItemCancelledEvent), sale.Id);
+            await _bus.Publish(new SaleItemCancelledEvent
+            {
+                SaleId = sale.Id,
+                SaleNumber = sale.SaleNumber,
+                ItemId = saleItem.Id,
+                ProductId = saleItem.ProductId,
+                ProductName = saleItem.ProductName,
+                Quantity = saleItem.Quantity,
+                Total = saleItem.Total,
+                CancelledAt = sale.CancelledAt ?? DateTime.Now
+            }, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error publishing event {SaleItemCancelledEvent} for sale ID {SaleId}", nameof(SaleItemCancelledEvent), sale.Id);
+        }
+
         return new CancelSaleItemResponse { Success = true };
     }
 }
