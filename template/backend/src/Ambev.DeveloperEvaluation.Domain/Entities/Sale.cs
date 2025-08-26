@@ -1,0 +1,148 @@
+﻿using Ambev.DeveloperEvaluation.Common.Validation;
+using Ambev.DeveloperEvaluation.Domain.Common;
+using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.Domain.Validation;
+
+namespace Ambev.DeveloperEvaluation.Domain.Entities;
+
+/// <summary>
+/// Represents a sale transaction in the system, including customer, branch, items, and totals.
+/// Follows DDD principles with validation and encapsulated business rules.
+/// </summary>
+public class Sale : BaseEntity
+{
+    /// <summary>
+    /// Unique sequential sale number.
+    /// </summary>
+    public string SaleNumber { get; private set; } = Guid.NewGuid().ToString("N")[..8].ToUpper();
+
+    /// <summary>
+    /// Date and time when the sale was made.
+    /// </summary>
+    public DateTime SaleDate { get; private set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// Status of the sale
+    /// </summary>
+    public SaleStatus Status { get; set; }
+
+
+    /// <summary>
+    /// External identity reference for the customer.
+    /// </summary>
+    public Guid CustomerId { get; private set; }
+
+    /// <summary>
+    /// Denormalized customer name.
+    /// </summary>
+    public string CustomerName { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Branch where the sale occurred.
+    /// </summary>
+    public string Branch { get; private set; } = string.Empty;
+
+
+    /// <summary>
+    /// Collection of items sold in this transaction.
+    /// </summary>
+    public List<SaleItem> Items { get; private set; } = [];
+
+    /// <summary>
+    /// Total sale amount (calculated from items).
+    /// </summary>
+    public decimal TotalAmount { get; private set; }
+
+    /// <summary>
+    /// Total sale discount (calculated from items).
+    /// </summary>
+    public decimal TotalDiscount { get; private set; }
+
+    /// <summary>
+    /// Indicates whether the sale is cancelled.
+    /// </summary>
+    public bool IsCancelled { get; private set; }
+
+    /// <summary>
+    /// Date and time when the sale was cancelled.
+    /// </summary>
+    public DateTime? CancelledAt { get; set; }
+
+    public Sale()
+    {
+    }
+
+    /// <summary>
+    /// Creates a new sale instance.
+    /// </summary>
+    /// <param name="customerId">External customer ID</param>
+    /// <param name="customerName">Customer name</param>
+    /// <param name="branch">Branch name</param>
+    public Sale(SaleStatus status, Guid customerId, string branch)
+    {
+        Status = status;
+        CustomerId = customerId;
+        Branch = branch;
+    }
+
+    /// <summary>
+    /// Adds an item to the sale applying business rules (discount tiers and limits).
+    /// </summary>
+    public void AddItems(List<SaleItem> items)
+    {
+        if (IsCancelled)
+            throw new InvalidOperationException("Cannot add items to a cancelled sale.");
+
+        Items.AddRange(items);
+        TotalAmount = Items.Sum(i => i.Total);
+        TotalDiscount = Items.Sum(i => i.Discount);
+    }
+
+    /// <summary>
+    /// Updates the sale and its items.
+    /// </summary>
+    public void UpdateSale(Guid customerId, List<SaleItem> items)
+    {
+        if (IsCancelled)
+            throw new InvalidOperationException("Cannot update a cancelled sale.");
+
+        CustomerId = customerId;
+        Items.Clear();
+        TotalAmount = 0;
+        TotalDiscount = 0;
+        
+        Items.AddRange(items);
+        TotalAmount = Items.Sum(i => i.Total);
+        TotalDiscount = Items.Sum(i => i.Discount);
+    }
+
+    /// <summary>
+    /// Cancels the sale and all items.
+    /// </summary>
+    public void CancelSale()
+    {
+        if (IsCancelled) return;
+
+        IsCancelled = true;
+        CancelledAt = DateTime.UtcNow;
+
+        foreach (var item in Items)
+        {
+            item.Cancel();
+        }
+    }
+
+    /// <summary>
+    /// Performs validation of the sale entity using the SaleValidator rules.
+    /// </summary>
+    public ValidationResultDetail Validate()
+    {
+        var validator = new SaleValidator();
+        var result = validator.Validate(this);
+        return new ValidationResultDetail
+        {
+            IsValid = result.IsValid,
+            Errors = result.Errors.Select(o => (ValidationErrorDetail)o)
+        };
+    }
+}
