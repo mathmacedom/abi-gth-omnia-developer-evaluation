@@ -8,6 +8,8 @@ using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSaleItem;
+using Ambev.DeveloperEvaluation.Application.Sales.CancelSaleItem;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 
@@ -71,41 +73,6 @@ public class SalesController : BaseController
     }
 
     /// <summary>
-    /// Updates an existing sale
-    /// </summary>
-    /// <param name="id">The sale identifier</param>
-    /// <param name="request">The update request</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The updated sale details</returns>
-    [HttpPut("{id}")]
-    [ProducesResponseType(typeof(ApiResponseWithData<UpdateSaleResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UpdateSale([FromRoute] Guid id, [FromBody] UpdateSaleRequest request, CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("Handling {UpdateSaleRequest}", nameof(UpdateSaleRequest));
-        request.Id = id;
-
-        var validator = new UpdateSaleRequestValidator();
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-            return BadRequest(validationResult.Errors);
-
-        var command = _mapper.Map<UpdateSaleCommand>(request);
-        var response = await _mediator.Send(command, cancellationToken);
-
-        _logger.LogInformation("Sale updated successfully with ID: {Id}", id);
-
-        _logger.LogInformation("Handled {UpdateSaleRequest} successfully", nameof(UpdateSaleRequest));
-        return Ok(new ApiResponseWithData<UpdateSaleResponse>
-        {
-            Success = true,
-            Message = "Sale updated successfully",
-            Data = _mapper.Map<UpdateSaleResponse>(response)
-        });
-    }
-
-    /// <summary>
     /// Cancel a sale by its ID
     /// </summary>
     /// <param name="id">The unique identifier of the sale to cancel</param>
@@ -136,6 +103,41 @@ public class SalesController : BaseController
         {
             Success = true,
             Message = "Sale cancelled successfully"
+        });
+    }
+
+    /// <summary>
+    /// Cancel a specific sale item by its ID
+    /// </summary>
+    /// <param name="id">The unique identifier of the sale</param>
+    /// <param name="itemId">The unique identifier of the sale item</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Success response if the sale was cancelled</returns>
+    [HttpPatch("{id}/items/{itemId}/cancel")]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CancelSaleItem([FromRoute] Guid id, [FromRoute] Guid itemId, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Handling {CancelSaleItemRequest}", nameof(CancelSaleItemRequest));
+
+        var request = new CancelSaleItemRequest { SaleId = id, SaleItemId = itemId };
+        var validator = new CancelSaleItemRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
+
+        var command = _mapper.Map<CancelSaleItemCommand>(request);
+        await _mediator.Send(command, cancellationToken);
+
+        _logger.LogInformation("Sale item cancelled successfully with ID: {Id}", id);
+
+        _logger.LogInformation("Handled {CancelSaleItemRequest} successfully", nameof(CancelSaleItemRequest));
+        return Ok(new ApiResponse
+        {
+            Success = true,
+            Message = "Sale item cancelled successfully"
         });
     }
 }

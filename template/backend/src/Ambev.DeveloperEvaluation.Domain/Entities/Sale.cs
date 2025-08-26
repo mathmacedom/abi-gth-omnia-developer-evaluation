@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Common;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Validation;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
@@ -20,7 +21,12 @@ public class Sale : BaseEntity
     /// </summary>
     public DateTime SaleDate { get; private set; } = DateTime.UtcNow;
 
-    
+    /// <summary>
+    /// Status of the sale
+    /// </summary>
+    public SaleStatus Status { get; set; }
+
+
     /// <summary>
     /// External identity reference for the customer.
     /// </summary>
@@ -72,8 +78,9 @@ public class Sale : BaseEntity
     /// <param name="customerId">External customer ID</param>
     /// <param name="customerName">Customer name</param>
     /// <param name="branch">Branch name</param>
-    public Sale(Guid customerId, string branch)
+    public Sale(SaleStatus status, Guid customerId, string branch)
     {
+        Status = status;
         CustomerId = customerId;
         Branch = branch;
     }

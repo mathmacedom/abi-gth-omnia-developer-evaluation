@@ -84,7 +84,7 @@ public class CheckoutCartHandler : IRequestHandler<CheckoutCartCommand, GetSaleR
         }
 
         _logger.LogInformation("Creating a sale...");
-        var sale = new Sale(cart.CustomerId, cart.Branch);
+        var sale = new Sale(SaleStatus.Open, cart.CustomerId, cart.Branch);
         var saleItems = new List<SaleItem>();
         _logger.LogInformation("Add items to new sale...");
         foreach (var item in cart.Items)

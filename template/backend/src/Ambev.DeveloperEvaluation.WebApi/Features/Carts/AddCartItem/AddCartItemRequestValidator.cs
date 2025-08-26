@@ -27,6 +27,7 @@ public class AddCartItemRequestValidator : AbstractValidator<AddCartItemRequest>
             .WithMessage("Product ID is required");
 
         RuleFor(x => x.Quantity)
-            .GreaterThan(0);
+            .GreaterThan(0)
+            .LessThanOrEqualTo(20).WithMessage("Cannot sell more than 20 identical items.");
     }
 }

@@ -20,6 +20,11 @@ public record GetAllProductsCommand : IRequest<GetAllProductsResult>
     /// </summary>
     public string? Category { get; set; }
 
+    public GetAllProductsCommand()
+    {
+        
+    }
+
     /// <summary>
     /// Initializes a new instance of GetProductCommand
     /// </summary>

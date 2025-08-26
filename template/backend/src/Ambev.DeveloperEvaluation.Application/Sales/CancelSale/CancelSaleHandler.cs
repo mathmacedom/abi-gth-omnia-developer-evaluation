@@ -54,7 +54,7 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
             throw new KeyNotFoundException($"Sale with ID {request.Id} not found");
         }
 
-            _logger.LogInformation("Handled {CancelSaleCommand} successfully...", nameof(CancelSaleCommand));
+        _logger.LogInformation("Handled {CancelSaleCommand} successfully...", nameof(CancelSaleCommand));
         return new CancelSaleResponse { Success = true };
     }
 }

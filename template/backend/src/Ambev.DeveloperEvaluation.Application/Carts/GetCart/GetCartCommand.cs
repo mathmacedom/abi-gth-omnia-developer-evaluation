@@ -14,7 +14,7 @@ public record GetCartCommand : IRequest<GetCartResult>
     /// <summary>
     /// The unique identifier of the cart to retrieve
     /// </summary>
-    public Guid Id { get; }
+    public Guid Id { get; set; }
 
     /// <summary>
     /// Initializes a new instance of GetCartCommand
@@ -23,5 +23,10 @@ public record GetCartCommand : IRequest<GetCartResult>
     public GetCartCommand(Guid id)
     {
         Id = id;
+    }
+
+    public GetCartCommand()
+    {
+        
     }
 }

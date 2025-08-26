@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Carts.AddCartItem;
+using Ambev.DeveloperEvaluation.Application.Carts.CheckoutCart;
 using Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 using Ambev.DeveloperEvaluation.Application.Carts.DeleteCartItem;
 using Ambev.DeveloperEvaluation.Application.Carts.GetCart;
@@ -6,11 +7,13 @@ using Ambev.DeveloperEvaluation.Application.Carts.GetCartByCustomerId;
 using Ambev.DeveloperEvaluation.Application.Carts.UpdateCartItem;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Carts.AddCartItem;
+using Ambev.DeveloperEvaluation.WebApi.Features.Carts.CheckoutCart;
 using Ambev.DeveloperEvaluation.WebApi.Features.Carts.CreateCart;
 using Ambev.DeveloperEvaluation.WebApi.Features.Carts.DeleteCartItem;
 using Ambev.DeveloperEvaluation.WebApi.Features.Carts.GetCart;
 using Ambev.DeveloperEvaluation.WebApi.Features.Carts.GetCartByCustomerId;
 using Ambev.DeveloperEvaluation.WebApi.Features.Carts.UpdateCartItem;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -40,9 +43,6 @@ public class CartsController : BaseController
         _mapper = mapper;
         _logger=logger;
     }
-
-    [HttpGet]
-    public string Teste() => "OK";
 
     /// <summary>
     /// Retrieves a cart by its ID
@@ -85,34 +85,33 @@ public class CartsController : BaseController
     /// <param name="id">The unique identifier of the cart</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The cart details if found</returns>
-    //[HttpGet("/customer/{id}")]
-    //[ProducesResponseType(typeof(ApiResponseWithData<GetCartByCustomerIdResponse>), StatusCodes.Status200OK)]
-    //[ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-    //[ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-    //public async Task<IActionResult> GetCartByCustomerId([FromRoute] Guid id, CancellationToken cancellationToken)
-    //{
-    //    _logger.LogInformation("Handling {GetCartByCustomerIdRequest}", nameof(GetCartByCustomerIdRequest));
+    [HttpGet("customer/{id}")]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetCartByCustomerId([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Handling {GetCartByCustomerIdRequest}", nameof(GetCartByCustomerIdRequest));
 
-    //    var request = new GetCartByCustomerIdRequest { CustomerId = id };
-    //    var validator = new GetCartByCustomerIdRequestValidator();
-    //    var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        var request = new GetCartByCustomerIdRequest { CustomerId = id };
+        var validator = new GetCartByCustomerIdRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
-    //    if (!validationResult.IsValid)
-    //        return BadRequest(validationResult.Errors);
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
 
-    //    var command = _mapper.Map<GetCartByCustomerIdCommand>(request.CustomerId);
-    //    var response = await _mediator.Send(command, cancellationToken);
+        var command = _mapper.Map<GetCartByCustomerIdCommand>(request.CustomerId);
+        var response = await _mediator.Send(command, cancellationToken);
 
-    //    _logger.LogInformation("Cart retrieved successfully with customer ID: {Id}", id);
+        _logger.LogInformation("Cart retrieved successfully with customer ID: {Id}", id);
 
-    //    _logger.LogInformation("Handled {GetCartByCustomerIdRequest} successfully", nameof(GetCartByCustomerIdRequest));
-    //    return Ok(new ApiResponseWithData<GetCartByCustomerIdResponse>
-    //    {
-    //        Success = true,
-    //        Message = "Cart retrieved successfully",
-    //        Data = _mapper.Map<GetCartByCustomerIdResponse>(response)
-    //    });
-    //}
+        _logger.LogInformation("Handled {GetCartByCustomerIdRequest} successfully", nameof(GetCartByCustomerIdRequest));
+        return Ok(new ApiResponseWithData<GetCartByCustomerIdResponse>
+        {
+            Success = true,
+            Message = "Cart retrieved successfully",
+            Data = _mapper.Map<GetCartByCustomerIdResponse>(response)
+        });
+    }
 
     /// <summary>
     /// Creates a new cart
@@ -148,13 +147,48 @@ public class CartsController : BaseController
     }
 
     /// <summary>
-    /// Add an cart item
+    /// Checkout a cart
     /// </summary>
     /// <param name="id">The cart identifier</param>
     /// <param name="request">The add request</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The updated cart details</returns>
-    [HttpPut("{id}/items")]
+    [HttpPost("{id}/checkout")]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CheckoutCart([FromRoute] Guid id, [FromBody] CheckoutCartRequest request, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Handling {CheckoutCartRequest}", nameof(CheckoutCartRequest));
+        request.Id = id;
+
+        var validator = new CheckoutCartRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
+
+        var command = _mapper.Map<CheckoutCartCommand>(request);
+        var response = await _mediator.Send(command, cancellationToken);
+
+        _logger.LogInformation("Cart item added successfully...");
+
+        _logger.LogInformation("Handled {CheckoutCartRequest} successfully", nameof(CheckoutCartRequest));
+        return Ok(new ApiResponseWithData<GetSaleResponse>
+        {
+            Success = true,
+            Message = "Cart item added successfully",
+            Data = _mapper.Map<GetSaleResponse>(response)
+        });
+    }
+
+    /// <summary>
+    /// Add a cart item
+    /// </summary>
+    /// <param name="id">The cart identifier</param>
+    /// <param name="request">The add request</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The updated cart details</returns>
+    [HttpPost("{id}/items")]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> AddCartItem([FromRoute] Guid id, [FromBody] AddCartItemRequest request, CancellationToken cancellationToken)

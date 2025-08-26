@@ -9,7 +9,7 @@ public class UpdateCartItemResult
 {
     public Guid Id { get; set; }
     public Guid CustomerId { get; set; }
-    public string CustomerName { get; set; } = string.Empty;
+    public string Branch { get; set; } = string.Empty;
     public List<CartItemResult> Items { get; set; } = new();
     public CartStatus Status { get; set; }
     public DateTime CreatedAt { get; set; }

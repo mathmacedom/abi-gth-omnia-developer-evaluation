@@ -31,7 +31,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         /// <summary>
         /// Indicates whether the product is active.
         /// </summary>
-        public bool IsActive { get; private set; }
+        public bool IsActive { get; private set; } = true;
 
         public Product()
         {
@@ -51,6 +51,11 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             UnitPrice = unitPrice;
             Description = description;
             Category = category;
+        }
+
+        public void Unactivate()
+        {
+            IsActive = false;
         }
     }
 }

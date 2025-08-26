@@ -58,7 +58,7 @@ public class CartItem : BaseEntity
         ProductName = productName;
         Quantity = quantity;
         UnitPrice = unitPrice;
-        Subtotal = UnitPrice * Quantity;
+        UpdateSubtotal();
     }
 
     /// <summary>
@@ -68,6 +68,11 @@ public class CartItem : BaseEntity
     public void UpdateQuantity(int quantity)
     {
         Quantity = quantity;
+        Subtotal = UnitPrice * Quantity;
+    }
+
+    public void UpdateSubtotal()
+    {
         Subtotal = UnitPrice * Quantity;
     }
 }

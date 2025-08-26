@@ -76,9 +76,14 @@ public class SaleItem : BaseEntity
         ProductName = productName;
         Quantity = quantity;
         UnitPrice = unitPrice;
-        Total = (Quantity * UnitPrice) - Discount;
 
+        UpdateTotal();
+    }
+
+    public void UpdateTotal()
+    {
         ApplyDiscount();
+        Total = (Quantity * UnitPrice) - Discount;
     }
 
     private void ApplyDiscount()

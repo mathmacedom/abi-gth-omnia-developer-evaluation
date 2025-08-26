@@ -34,4 +34,14 @@ public class GetProductResult
     /// Gets or sets the boolean that indicates whether the product is active.
     /// </summary>
     public bool IsActive { get; set; }
+
+    public GetProductResult(Guid id, string name, decimal unitPrice, string description, string category, bool isActive)
+    {
+        Id = id;
+        Name = name;
+        UnitPrice = unitPrice;
+        Description = description;
+        Category = category;
+        IsActive = isActive;
+    }
 }

@@ -26,6 +26,11 @@ public class GetSaleResponse
     public decimal TotalAmount { get; set; }
 
     /// <summary>
+    /// The total discount of the sale
+    /// </summary>
+    public decimal TotalDiscount { get; set; }
+
+    /// <summary>
     /// If the sale is cancelled
     /// </summary>
     public bool IsCancelled { get; set; }
@@ -34,6 +39,16 @@ public class GetSaleResponse
     /// The date and time when the sale was created
     /// </summary>
     public DateTime CreatedAt { get; set; }
+
+    /// <summary>
+    /// The date and time when the sale was updated
+    /// </summary>
+    public DateTime? UpdatedAt { get; set; }
+
+    /// <summary>
+    /// The date and time when the sale was cancelled
+    /// </summary>
+    public DateTime? CancelledAt { get; set; }
 
     /// <summary>
     /// The list of items included in the sale
@@ -50,6 +65,11 @@ public class SaleItemResponse
     /// The identifier of the product
     /// </summary>
     public Guid ProductId { get; set; }
+
+    /// <summary>
+    /// The name of the product sold
+    /// </summary>
+    public string ProductName { get; set; } = string.Empty;
 
     /// <summary>
     /// The quantity of the product sold
@@ -70,4 +90,9 @@ public class SaleItemResponse
     /// The total amount for this item (Quantity × UnitPrice - Discount)
     /// </summary>
     public decimal Total { get; set; }
+
+    /// <summary>
+    /// If the sale item is cancelled
+    /// </summary>
+    public bool IsCancelled { get; set; }
 }

@@ -22,27 +22,27 @@ public class CartRepository : ICartRepository
     }
 
     /// <summary>
-    /// Creates a new sale in the database
+    /// Creates a new cart in the database
     /// </summary>
-    /// <param name="sale">The sale to create</param>
+    /// <param name="cart">The cart to create</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The created sale</returns>
-    public async Task<Cart> CreateAsync(Cart sale, CancellationToken cancellationToken = default)
+    /// <returns>The created cart</returns>
+    public async Task<Cart> CreateAsync(Cart cart, CancellationToken cancellationToken = default)
     {
-        await _context.Carts.AddAsync(sale, cancellationToken);
+        await _context.Carts.AddAsync(cart, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
-        return sale;
+        return cart;
     }
 
     /// <summary>
-    /// Retrieves a sale by their unique identifier
+    /// Retrieves a cart by their unique identifier
     /// </summary>
-    /// <param name="customerId">The unique identifier of the sale</param>
+    /// <param name="id">The unique identifier of the cart</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The sale if found, null otherwise</returns>
-    public async Task<Cart?> GetByIdAsync(Guid customerId, CancellationToken cancellationToken = default)
+    /// <returns>The cart if found, null otherwise</returns>
+    public async Task<Cart?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Carts.AsNoTracking().FirstOrDefaultAsync(o=> o.Id == customerId, cancellationToken);
+        return await _context.Carts.FirstOrDefaultAsync(o=> o.Id == id, cancellationToken);
     }
 
     /// <summary>
@@ -53,54 +53,54 @@ public class CartRepository : ICartRepository
     /// <returns>The cart if found, null otherwise</returns>
     public async Task<Cart?> GetByCustomerIdAsync(Guid customerId, CancellationToken cancellationToken = default)
     {
-        return await _context.Carts.AsNoTracking().FirstOrDefaultAsync(o => o.CustomerId == customerId, cancellationToken);
+        return await _context.Carts.FirstOrDefaultAsync(o => o.CustomerId == customerId, cancellationToken);
     }
 
     /// <summary>
-    /// Update an existing sale
+    /// Update an existing cart
     /// </summary>
-    /// <param name="sale">The sale to be updated</param>
+    /// <param name="cart">The cart to be updated</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The updated sale</returns>
-    public async Task<Cart?> UpdateAsync(Cart sale, CancellationToken cancellationToken = default)
+    /// <returns>The updated cart</returns>
+    public async Task<Cart?> UpdateAsync(Cart cart, CancellationToken cancellationToken = default)
     {
-        _context.Carts.Update(sale);
+        _context.Carts.Update(cart);
         await _context.SaveChangesAsync(cancellationToken);
-        return sale;
+        return cart;
     }
 
     /// <summary>
-    /// Cancel a sale by their unique identifier
+    /// Cancel a cart by their unique identifier
     /// </summary>
-    /// <param name="id">The unique identifier of the sale</param>
+    /// <param name="id">The unique identifier of the cart</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>True if the sale was cancelled, false if not found</returns>
+    /// <returns>True if the cart was cancelled, false if not found</returns>
     public async Task<bool> CancelAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var sale = await GetByIdAsync(id, cancellationToken);
-        if (sale == null)
+        var cart = await GetByIdAsync(id, cancellationToken);
+        if (cart == null)
             return false;
 
-        sale.UpdateStatus(CartStatus.Cancelled);
+        cart.UpdateStatus(CartStatus.Cancelled);
 
-        _context.Carts.Update(sale);
+        _context.Carts.Update(cart);
         await _context.SaveChangesAsync(cancellationToken);
         return true;
     }
 
     /// <summary>
-    /// Deletes a sale from the database
+    /// Deletes a cart from the database
     /// </summary>
-    /// <param name="id">The unique identifier of the sale to delete</param>
+    /// <param name="id">The unique identifier of the cart to delete</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>True if the sale was deleted, false if not found</returns>
+    /// <returns>True if the cart was deleted, false if not found</returns>
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var sale = await GetByIdAsync(id, cancellationToken);
-        if (sale == null)
+        var cart = await GetByIdAsync(id, cancellationToken);
+        if (cart == null)
             return false;
 
-        _context.Carts.Remove(sale);
+        _context.Carts.Remove(cart);
         await _context.SaveChangesAsync(cancellationToken);
         return true;
     }
