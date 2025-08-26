@@ -65,7 +65,7 @@ docker ps
 Expected containers:
 * ambev_developer_evaluation_webapi (API)
 * ambev_developer_evaluation_database (PostgreSQL)
-* ambev.developerevaluation.rabbitmq (RabbitMQ)
+* ambev_developer_evaluation_rabbitmq (RabbitMQ)
 
 For troubleshooting failed containers:
 ```bash
@@ -77,7 +77,7 @@ Manually connect containers to network if needed:
 ```bash
 docker network connect ambev_developer_evaluation ambev_developer_evaluation_webapi
 docker network connect ambev_developer_evaluation ambev_developer_evaluation_database
-docker network connect ambev_developer_evaluation ambev.developerevaluation.rabbitmq
+docker network connect ambev_developer_evaluation ambev_developer_evaluation_rabbitmq
 ```
 
 Verify network configuration:
