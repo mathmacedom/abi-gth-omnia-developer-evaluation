@@ -2,174 +2,143 @@
 
 ### Products
 
-#### GET /products
+#### GET /api/Products
 - Description: Retrieve a list of all products
 - Query Parameters:
-  - `_page` (optional): Page number for pagination (default: 1)
-  - `_size` (optional): Number of items per page (default: 10)
-  - `_order` (optional): Ordering of results (e.g., "price desc, title asc")
-- Response: 
+  - `ActiveOnly` (optional): Filter to show only active products (boolean)
+  - `Category` (optional): Filter by product category (string)
+- Response:
   ```json
   {
-    "data": [
-      {
-        "id": "integer",
-        "title": "string",
-        "price": "number",
-        "description": "string",
-        "category": "string",
-        "image": "string",
-        "rating": {
-          "rate": "number",
-          "count": "integer"
+    "success": true,
+    "message": "string",
+    "errors": null,
+    "data": {
+      "products": [
+        {
+          "id": "uuid",
+          "name": "string",
+          "unitPrice": 0.0,
+          "category": "string",
+          "isActive": true,
+          "createdAt": "2024-01-01T00:00:00Z"
         }
-      }
-    ],
-    "totalItems": "integer",
-    "currentPage": "integer",
-    "totalPages": "integer"
+      ]
+    }
   }
   ```
 
-#### POST /products
-- Description: Add a new product
+#### POST /api/Products
+- Description: Create a new product
 - Request Body:
   ```json
   {
-    "title": "string",
-    "price": "number",
+    "name": "string",
     "description": "string",
+    "unitPrice": 0.0,
     "category": "string",
-    "image": "string",
-    "rating": {
-      "rate": "number",
-      "count": "integer"
-    }
+    "isActive": true
   }
   ```
-- Response: 
+- Response:
   ```json
   {
-    "id": "integer",
-    "title": "string",
-    "price": "number",
-    "description": "string",
-    "category": "string",
-    "image": "string",
-    "rating": {
-      "rate": "number",
-      "count": "integer"
+    "success": true,
+    "message": "string",
+    "errors": null,
+    "data": {
+      "id": "uuid",
+      "name": "string",
+      "description": "string",
+      "unitPrice": 0.0,
+      "category": "string",
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00Z"
     }
   }
   ```
+- Error Responses:
+  - `400 Bad Request`: Invalid request data
 
-#### GET /products/{id}
+#### GET /api/Products/{id}
 - Description: Retrieve a specific product by ID
 - Path Parameters:
-  - `id`: Product ID
-- Response: 
+  - `id`: Product ID (UUID format)
+- Response:
   ```json
   {
-    "id": "integer",
-    "title": "string",
-    "price": "number",
-    "description": "string",
-    "category": "string",
-    "image": "string",
-    "rating": {
-      "rate": "number",
-      "count": "integer"
+    "success": true,
+    "message": "string",
+    "errors": null,
+    "data": {
+      "id": "uuid",
+      "name": "string",
+      "description": "string",
+      "unitPrice": 0.0,
+      "category": "string",
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
     }
   }
   ```
+- Error Responses:
+  - `400 Bad Request`: Invalid request parameters
+  - `404 Not Found`: Product not found
 
-#### PUT /products/{id}
+#### PUT /api/Products/{id}
 - Description: Update a specific product
 - Path Parameters:
-  - `id`: Product ID
+  - `id`: Product ID (UUID format)
 - Request Body:
   ```json
   {
-    "title": "string",
-    "price": "number",
+    "name": "string",
     "description": "string",
+    "unitPrice": 0.0,
     "category": "string",
-    "image": "string",
-    "rating": {
-      "rate": "number",
-      "count": "integer"
-    }
+    "isActive": true
   }
   ```
-- Response: 
+- Response:
   ```json
   {
-    "id": "integer",
-    "title": "string",
-    "price": "number",
-    "description": "string",
-    "category": "string",
-    "image": "string",
-    "rating": {
-      "rate": "number",
-      "count": "integer"
+    "success": true,
+    "message": "string",
+    "errors": null,
+    "data": {
+      "id": "uuid",
+      "name": "string",
+      "description": "string",
+      "unitPrice": 0.0,
+      "category": "string",
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
     }
   }
   ```
+- Error Responses:
+  - `400 Bad Request`: Invalid request data
 
-#### DELETE /products/{id}
+#### DELETE /api/Products/{id}
 - Description: Delete a specific product
 - Path Parameters:
-  - `id`: Product ID
-- Response: 
+  - `id`: Product ID (UUID format)
+- Response:
   ```json
   {
-    "message": "string"
+    "success": true,
+    "message": "string",
+    "errors": null
   }
   ```
-
-#### GET /products/categories
-- Description: Retrieve all product categories
-- Response: 
-  ```json
-  [
-    "string"
-  ]
-  ```
-
-#### GET /products/category/{category}
-- Description: Retrieve products in a specific category
-- Path Parameters:
-  - `category`: Category name
-- Query Parameters:
-  - `_page` (optional): Page number for pagination (default: 1)
-  - `_size` (optional): Number of items per page (default: 10)
-  - `_order` (optional): Ordering of results (e.g., "price desc, title asc")
-- Response: 
-  ```json
-  {
-    "data": [
-      {
-        "id": "integer",
-        "title": "string",
-        "price": "number",
-        "description": "string",
-        "category": "string",
-        "image": "string",
-        "rating": {
-          "rate": "number",
-          "count": "integer"
-        }
-      }
-    ],
-    "totalItems": "integer",
-    "currentPage": "integer",
-    "totalPages": "integer"
-  }
-  ```
+- Error Responses:
+  - `400 Bad Request`: Invalid request parameters
+  - `404 Not Found`: Product not found
 
 <br>
 <div style="display: flex; justify-content: space-between;">
-  <a href="./general-api.md">Previous: General API</a>
+  <a href="./sales-api.md">Previous: Sales API</a>
   <a href="./carts-api.md">Next: Carts API</a>
 </div>
