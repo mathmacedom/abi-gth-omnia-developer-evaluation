@@ -25,7 +25,7 @@ git --version
 Download the project:
 ```bash
 git clone https://github.com/mathmacedom/abi-gth-omnia-developer-evaluation.git
-cd abi-gth-omnia-developer-evaluation
+cd "abi-gth-omnia-developer-evaluation\template\backend"
 ```
 
 ### Step 2: Environment Setup
@@ -91,7 +91,10 @@ Navigate to `src` directory and execute:
 dotnet ef database update --project Ambev.DeveloperEvaluation.ORM --startup-project Ambev.DeveloperEvaluation.WebApi
 ```
 
-### Step 6: API Access
+### Step 6: Run API project
+Select the project Ambev.DeveloperEvaluation.WebApi in your IDE (Visual Studio e.g.) and run it. This will start the Web API service.
+
+### Step 7: API Access
 Access the Swagger interface at:
 
 URL: http://localhost:8081/swagger
